@@ -1,0 +1,400 @@
+﻿<Window x:Class="NZNZWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NZNZWPF"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        BorderBrush="Black"
+        Title="니짤내짤"
+        Height="600" Width="800"
+        MinHeight="360" MinWidth="480"
+        Padding="5,-5,5,5">
+    <Window.Resources>
+        <SolidColorBrush x:Key="UnSelectedBrush" Color="DarkSeaGreen" />
+        <SolidColorBrush x:Key="SelectedBrush" Color="SeaGreen" />
+        <SolidColorBrush x:Key="FavMouseOverBrush" Color="DarkSeaGreen" />
+        <SolidColorBrush x:Key="FavButtonBrush" Color="Tomato" />
+        <SolidColorBrush x:Key="FrameBorderColor" Color="DarkGreen" />
+    </Window.Resources>
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Window">
+                        <Border x:Name="Panel"
+                                Background="{DynamicResource SelectedBrush}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="5"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5"/>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="5"/>
+                                </Grid.RowDefinitions>
+                                
+                                <!-- North -->
+                                <Rectangle Grid.Row="0" Grid.ColumnSpan="3" Panel.ZIndex="3" Fill="Transparent" Name="top" MouseDown="ResizeDrag" MouseUp="ResizeMouseUp" MouseEnter="ResizeMouseEnter" MouseLeave="ResizeMouseLeave"/>
+                                
+                                <!-- South -->
+                                <Rectangle Grid.Row="2" Grid.ColumnSpan="3" Panel.ZIndex="3" Fill="Transparent" Name="bottom" MouseDown="ResizeDrag" MouseUp="ResizeMouseUp" MouseEnter="ResizeMouseEnter" MouseLeave="ResizeMouseLeave"/>
+                                
+                                <!-- East -->
+                                <Rectangle Grid.Column="2" Grid.RowSpan="3" Panel.ZIndex="3" Fill="Transparent" Name="right" MouseDown="ResizeDrag" MouseUp="ResizeMouseUp" MouseEnter="ResizeMouseEnter" MouseLeave="ResizeMouseLeave"/>
+                                
+                                <!-- West -->
+                                <Rectangle Grid.Column="0" Grid.RowSpan="3" Panel.ZIndex="3" Fill="Transparent" Name="left" MouseDown="ResizeDrag" MouseUp="ResizeMouseUp" MouseEnter="ResizeMouseEnter" MouseLeave="ResizeMouseLeave"/>
+                                
+                                <!-- NorthWest -->
+                                <Rectangle Grid.Column="0" Grid.Row="0" Panel.ZIndex="4" Fill="Transparent" Name="topLeft" MouseDown="ResizeDrag" MouseUp="ResizeMouseUp" MouseEnter="ResizeMouseEnter" MouseLeave="ResizeMouseLeave"/>
+                                
+                                <!-- NorthEast -->
+                                <Rectangle Grid.Column="2" Grid.Row="0" Panel.ZIndex="4" Fill="Transparent" Name="topRight" MouseDown="ResizeDrag" MouseUp="ResizeMouseUp" MouseEnter="ResizeMouseEnter" MouseLeave="ResizeMouseLeave"/>
+                                
+                                <!-- SouthWest -->
+                                <Rectangle Grid.Column="0" Grid.Row="2" Panel.ZIndex="4" Fill="Transparent" Name="bottomLeft" MouseDown="ResizeDrag" MouseUp="ResizeMouseUp" MouseEnter="ResizeMouseEnter" MouseLeave="ResizeMouseLeave"/>
+
+                                <!-- SouthEast -->
+                                <Rectangle Grid.Column="2" Grid.Row="2" Panel.ZIndex="4" Fill="Transparent" Name="bottomRight" MouseDown="ResizeDrag" MouseUp="ResizeMouseUp" MouseEnter="ResizeMouseEnter" MouseLeave="ResizeMouseLeave"/>
+
+                                <ContentPresenter Grid.ColumnSpan="3" Grid.RowSpan="3"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Style>
+    <Border Name="MainBorder" BorderBrush="{DynamicResource FrameBorderColor}" BorderThickness="2" >
+        <Border.Resources>
+            <Style TargetType="TabItem">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border x:Name="Panel"
+                                    Width="auto"
+                                    Background="{DynamicResource UnSelectedBrush}"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    BorderThickness="1"
+                                    Margin="0,5,-1,-1"
+                                    Padding="10, 3"
+                                    >
+
+                                <TextBlock x:Name="TextBlock"
+                                                      HorizontalAlignment="Center"
+                                           Foreground="White"
+                                           FontSize="20">
+                                    <ContentPresenter x:Name="ContentSite"
+                                                      ContentSource="Header"/>
+                                </TextBlock>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Panel" Property="Background" Value="{DynamicResource SelectedBrush}" />
+                                    <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource SelectedBrush}" />
+                                    <Setter TargetName="TextBlock" Property="FontWeight" Value="ExtraBlack" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="TabControl">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabControl">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+
+                                <!-- Header -->
+                                <TabPanel Grid.Row="0"
+                                          x:Name="HeaderPanel"
+                                          Panel.ZIndex="1"
+                                          IsItemsHost="True"
+                                          Margin="0,0,0,0"
+                                          />
+
+                                <!-- Contents -->
+                                <Border Name="Border"
+                                        Grid.Row="1"
+                                        Margin="0,-1,-3,-1"
+                                        BorderBrush="{DynamicResource SelectedBrush}"
+                                        BorderThickness="3,5,3,3"
+                                        >
+                                    <ContentPresenter x:Name="SelectedContentHost"
+                                                      ContentSource="SelectedContent" />
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="MenuButton" TargetType="Button">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border"
+                                    BorderBrush="{DynamicResource UnSelectedBrush}"
+                                    Background="{DynamicResource UnSelectedBrush}"
+                                    Margin="-1,0,0,0"
+                                    Height="33"
+                                    Width="{Binding ElementName=Border,Path=ActualHeight}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                    >
+                                <TextBlock x:Name="TextBlock"
+                                           FontSize="22"
+                                           FontWeight="ExtraBlack"
+                                           Foreground="White"
+                                           FontFamily="Consolas"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                        Margin="0"
+                                           TextWrapping="Wrap"
+                                           >
+                                    <ContentPresenter 
+                                        Margin="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                </TextBlock>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource SelectedBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="CloseMenuButton" TargetType="Button">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border"
+                                    BorderBrush="{DynamicResource UbSelectedBrush}"
+                                    Background="{DynamicResource UnSelectedBrush}"
+                                    Height="33"
+                                    Margin="-1,0,0,0"
+                                    Width="{Binding ElementName=Border,Path=ActualHeight}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                    >
+                                <TextBlock x:Name="TextBlock"
+                                           FontSize="22"
+                                           Foreground="White"
+                                           FontFamily="Consolas"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                        Margin="0"
+                                           TextWrapping="Wrap"
+                                           
+                                           >
+                                    <ContentPresenter 
+                                        Margin="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                </TextBlock>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="Red" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="FavMenuButton" TargetType="Button">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Border"
+                                    BorderBrush="{DynamicResource UnSelectedBrush}"
+                                    Background="{DynamicResource FavButtonBrush}"
+                                    Height="33"
+                                    Margin="-1,0,0,0"
+                                    Width="{Binding ElementName=Border,Path=ActualHeight}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                    >
+                                <TextBlock x:Name="TextBlock"
+                                           FontSize="22"
+                                           Foreground="White"
+                                           FontFamily="Consolas"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                        Margin="0"
+                                           TextWrapping="Wrap"
+                                           
+                                           >
+                                    <ContentPresenter 
+                                        Margin="0"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                                </TextBlock>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource FavMouseOverBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Border.Resources>
+
+        <Grid>
+            <Grid Margin="0,0" Grid.RowSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="5*" />
+                    <ColumnDefinition Width="5*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+
+
+                <Rectangle Fill="{DynamicResource FrameBorderColor}" Grid.ColumnSpan="3" 
+        MouseDown="Window_MouseDown"/>
+
+                <Grid Grid.Column="1" Background="Transparent"   MouseDown="Window_MouseDown">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center"
+                               FontWeight="Black" FontSize="18" Foreground="White">
+                            니짤내짤
+                    </TextBlock>
+                    <Button Grid.Column="1" Style="{DynamicResource FavMenuButton}" Name="FavButton" Click="FavButton_Click">
+                        F
+                    </Button>
+                </Grid>
+                <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,-3,0">
+                    <Button Style="{DynamicResource MenuButton}" Name="MinimizeButton">
+                        m
+                    </Button>
+                    <Button Style="{DynamicResource MenuButton}" Name="MaximizeButton">
+                        M
+                    </Button>
+                    <Button Style="{DynamicResource CloseMenuButton}" Name="CloseButton">
+                        X
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <TabControl x:Name="MainTabControl" Margin="0,-5,0,0" Grid.RowSpan="2">
+                <TabControl.Items>
+                    <TabItem Header="Browser">
+                        <Grid Margin="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="150" />
+                            </Grid.RowDefinitions>
+
+                            <!-- IE10 Mode : ref NZNZ -->
+                            <WebBrowser Name="MainWebBrowser" Language="UTF-8"
+                                        Source="http://prcm.jp/list/%EF%BE%81%EF%BE%99%EF%BE%89" 
+                                        Panel.ZIndex="1" 
+                                        />
+                            
+
+                            <Grid Grid.Row="1" Background="White" Panel.ZIndex="521">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="10" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                
+                                <!-- Navigation Group -->
+                                <Grid Name="NavGrid" Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Foreground="Black"
+                                               Margin="5" Name="URLLabel">
+                                        URL
+                                    </TextBlock>
+                                    <Grid VerticalAlignment="Center"  Height="{Binding ElementName=URLLabel,Path=ActualHeight}" Grid.Column="1">
+                                        <TextBox Name="URLTextBox" Height="Auto" Margin="5, 0"/>
+                                    </Grid>
+                                    <Button Grid.Column="2" Padding="20,0" Margin="5" Name="NavButton" Height="{Binding ElementName=URLLabel,Path=ActualHeight}" Click="NavButton_Click">
+                                        이동
+                                    </Button>
+                                </Grid>
+                                <!-- Button Group -->
+                                <Grid Name="ButtonGrid" Grid.Row="2">
+                                    
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Images">
+                        <Grid>
+                            <ListBox>
+                                <ListBox.Items>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                    <ListBoxItem Content="Test"/>
+                                </ListBox.Items>
+                            </ListBox>
+                        </Grid>
+                    </TabItem>
+                </TabControl.Items>
+            </TabControl>
+        </Grid>
+    </Border>
+</Window>
