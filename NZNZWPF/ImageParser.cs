@@ -56,14 +56,12 @@ namespace NZNZWPF
         public string Parse(string url)
         {
             string filename = url.Split('/').Last();
-
-            System.Windows.MessageBox.Show(url + "\n" + filename);
+            
             if (string.IsNullOrWhiteSpace(filename))
                 return null;
 
             Regex second = new Regex("(http|https)(://)([^<>\"'?&]*?)([-_]?[m0-9]{1,}[xX][0-9]*?)($|\\.jpg|\\.png|\\.bmp|\\.jpeg|\\.gif)");
-
-            System.Windows.MessageBox.Show(url);
+            
             Match m = second.Match(url);
 
             if (string.IsNullOrWhiteSpace(m.Value))

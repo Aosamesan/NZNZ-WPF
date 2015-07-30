@@ -65,7 +65,9 @@ namespace NZNZWPF
             image.UriSource = new Uri(url, UriKind.RelativeOrAbsolute);
             image.EndInit();
 
-            return image;
+            BitmapImage local = image.Clone();
+
+            return local;
         }
 
         public override string ToString()
@@ -96,6 +98,55 @@ namespace NZNZWPF
 
     class ImageItemCollection : ObservableCollection<ImageItem>
     {
+        private int minWidth;
+        private int minHeight;
+
+        public ImageItemCollection()
+        {
+            MinWidth = 300;
+            MinHeight = 300;
+        }
+
+        public ImageItemCollection(int minWidth = 300, int minHeight = 300)
+        {
+            MinWidth = minWidth;
+            MinHeight = minHeight;
+        }
+
+        public int MinWidth
+        {
+            get { return minWidth; }
+            set
+            {
+                if (value > 100)
+                {
+                    minWidth = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("MinWidth"));
+                }
+            }
+        }
+
+        public int MinHeight
+        {
+            get { return minHeight; }
+            set
+            {
+                if (value > 100)
+                {
+                    minHeight = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs("MinHeight"));
+                }
+            }
+        }
+
+        public ImageSource GetByURL(string url)
+        {
+            foreach (ImageItem item in Items)
+                if (item.URL == url)
+                    return item.OriginImage;
+            return null;
+        }
+
         public bool Contains(string url)
         {
             foreach (var item in Items)
