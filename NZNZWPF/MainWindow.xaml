@@ -13,6 +13,7 @@
         MinHeight="360" MinWidth="480"
         Padding="5,-5,5,5">
     <Window.Resources>
+        <local:ImageItemCollection x:Key="ImageItemsKey" />
         <SolidColorBrush x:Key="UnSelectedBrush" Color="DarkSeaGreen" />
         <SolidColorBrush x:Key="SelectedBrush" Color="SeaGreen" />
         <SolidColorBrush x:Key="FavMouseOverBrush" Color="DarkSeaGreen" />
@@ -256,6 +257,38 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style TargetType="Button" x:Key="NavButton">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="Panel"
+                                    BorderBrush="White"
+                                    BorderThickness="2"
+                                    Width="30"
+                                    Height="30"
+                                    >
+                                <TextBlock x:Name="TextBlock" VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           Foreground="White" FontSize="20" FontFamily="Consolas"
+                                    >
+                                    <ContentPresenter />
+                                </TextBlock>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource UnSelectedBrush}" />
+                                    <Setter TargetName="TextBlock" Property="Foreground" Value="{DynamicResource UnSelectedBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Panel" Property="Background" Value="{Binding ElementName=Panel,Path=BorderBrush}" />
+                                    <Setter TargetName="TextBlock" Property="Foreground" Value="{DynamicResource SelectedBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </Border.Resources>
 
         <Grid>
@@ -307,90 +340,88 @@
                         <Grid Margin="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
-                                <RowDefinition Height="150" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <!-- IE10 Mode : ref NZNZ -->
                             <WebBrowser Name="MainWebBrowser" Language="UTF-8"
-                                        Source="http://prcm.jp/list/%EF%BE%81%EF%BE%99%EF%BE%89" 
-                                        Panel.ZIndex="1" 
+                                        Source="http://google.com" 
+                                        Panel.ZIndex="1"
                                         />
-                            
 
-                            <Grid Grid.Row="1" Background="White" Panel.ZIndex="521">
+
+                            <Grid Grid.Row="1" Background="White">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="10" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                
+
                                 <!-- Navigation Group -->
-                                <Grid Name="NavGrid" Grid.Row="1">
+                                <Grid Name="NavGrid" Grid.Row="0" Background="{DynamicResource SelectedBrush}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Foreground="Black"
+                                    <TextBlock 
+                                        BaselineOffset="{Binding ElementName=NavButton,Path=BaselineOffset}"
+                                       HorizontalAlignment="Center" FontSize="20" Foreground="Black"
                                                Margin="5" Name="URLLabel">
                                         URL
                                     </TextBlock>
-                                    <Grid VerticalAlignment="Center"  Height="{Binding ElementName=URLLabel,Path=ActualHeight}" Grid.Column="1">
-                                        <TextBox Name="URLTextBox" Height="Auto" Margin="5, 0"/>
+                                    <Grid VerticalAlignment="Center" Grid.Column="1">
+                                        <TextBox Name="URLTextBox" Margin="5, 3" TextBlock.BaselineOffset="{Binding ElementName=NavButton,Path=BaselineOffset}" KeyDown="URLTextBox_KeyDown"
+                                                 FontSize="20"
+                                                />
                                     </Grid>
-                                    <Button Grid.Column="2" Padding="20,0" Margin="5" Name="NavButton" Height="{Binding ElementName=URLLabel,Path=ActualHeight}" Click="NavButton_Click">
-                                        이동
-                                    </Button>
+
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" >
+                                        <Button Margin="5" Name="NavButton" Click="NavButton_Click" Style="{DynamicResource NavButton}">
+                                            Go
+                                        </Button>
+                                        <Button Margin="5" Name="PrevButton" Style="{DynamicResource NavButton}" Click="PrevButton_Click" >
+                                            Bk
+                                        </Button>
+                                        <Button Margin="5" Name="NextButton" Style="{DynamicResource NavButton}" Click="NextButton_Click">
+                                            Fw
+                                        </Button>
+                                    </StackPanel>
                                 </Grid>
                                 <!-- Button Group -->
                                 <Grid Name="ButtonGrid" Grid.Row="2">
-                                    
+
                                 </Grid>
+                                <!-- Loading Bar -->
+                                <ProgressBar Grid.Row="2" Height="30" Background="Transparent" Foreground="{DynamicResource FrameBorderColor}" Value="100"/>
                             </Grid>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Images">
                         <Grid>
-                            <ListBox>
-                                <ListBox.Items>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                    <ListBoxItem Content="Test"/>
-                                </ListBox.Items>
-                            </ListBox>
+                            <Rectangle Fill="White"
+                                       Panel.ZIndex="1"
+                                       />
+
+                            <Grid
+                                       Panel.ZIndex="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Image x:Name="ImageView"
+                                       Opacity=".5"
+                                       Grid.Column="1"
+                                       SourceUpdated="ImageView_SourceUpdated"
+                                       />
+                            </Grid>
+                            <ListView x:Name="ImageListView"
+                                      Panel.ZIndex="3"
+                                      Background="Transparent"
+                                      SelectionChanged="ImageListView_SelectionChanged"
+                                      ItemsSource="{Binding Source={StaticResource ImageItemsKey}}"
+                                      />
                         </Grid>
                     </TabItem>
                 </TabControl.Items>

@@ -16,6 +16,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
+using System.Threading;
+using System.Xml;
+using System.Web;
+using System.Net;
+using System.Net.Http;
+using Microsoft.Win32;
+using mshtml;
+using System.Text.RegularExpressions;
+using System.IO;
 
 namespace NZNZWPF
 {
@@ -24,31 +34,66 @@ namespace NZNZWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region For Resize
-        HwndSource hwndSource;
-        private const int WM_SYSCOMMAND = 0x112;
-        Window activeWin;
-        #endregion
-
+        private WindowResizer resizer;
+        private ISourceParser sourceParser;
+        private ImageParser imageParser;
+        private ImageItemCollection collection;
+        
         public MainWindow()
         {
+            SetRegistry();
             InitializeComponent();
-
-            #region For Resize
-            activeWin = this as Window;
-
-            activeWin.SourceInitialized += (sender, e) =>
-            {
-                hwndSource = PresentationSource.FromVisual(sender as Visual) as HwndSource;
-                hwndSource.AddHook(new HwndSourceHook(WndProc));
-            };
-            #endregion
 
             #region Hide Script Error
             MainWebBrowser.Navigated += (sender, e) => HideScriptErrors(sender as WebBrowser, true);
             #endregion
 
             SetMenuButtons();
+
+            sourceParser = new SourceParser();
+            imageParser = new ImageParser(sourceParser);
+
+            resizer = new WindowResizer(this);
+
+            MainWebBrowser.Navigated += onNavigated;
+
+            // onLoadComplete의 내용은 Parse버튼으로 옮겨야함
+            MainWebBrowser.LoadCompleted += onLoadComplete;
+
+            collection = Resources["ImageItemsKey"] as ImageItemCollection;
+        }
+
+        private void onLoadComplete(object sender, EventArgs e)
+        {
+            WebClientWithTimeOut request = new WebClientWithTimeOut(3000);
+            StreamReader sr = new StreamReader(request.OpenRead(URLTextBox.Text));
+            string html = sr.ReadToEnd();
+
+            var list = imageParser.GetImageSources(ref html);
+
+            if (list == null)
+                return;
+
+            collection.Clear();
+
+            foreach (var item in list)
+            {
+                if (!collection.Contains(item))
+                    collection.Add(item);
+            }
+        }
+
+        private void onNavigated(object sender, NavigationEventArgs e)
+        {
+            SetNavButtonEnabled();
+
+            URLTextBox.Text = MainWebBrowser.Source.ToString();
+        }
+
+        private void SetNavButtonEnabled()
+        {
+            PrevButton.IsEnabled = MainWebBrowser.CanGoBack;
+            NextButton.IsEnabled = MainWebBrowser.CanGoForward;
         }
 
         private void SetMenuButtons()
@@ -60,154 +105,27 @@ namespace NZNZWPF
         }
         
         #region For Window Resize
-        public enum ResizeDirection
-        {
-            Left = 1,
-            Right = 2,
-            Top = 3,
-            TopLeft = 4,
-            TopRight = 5,
-            Bottom = 6,
-            BottomLeft = 7,
-            BottomRight = 8,
-        }
-
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            Debug.WriteLine("WndProc messages: " + msg.ToString());
-            //
-            // Check incoming window system messages
-            //
-            if (msg == WM_SYSCOMMAND)
-            {
-                Debug.WriteLine("WndProc messages: " + msg.ToString());
-            }
-
-            return IntPtr.Zero;
-        }
-
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        private void ResizeWindow(ResizeDirection direction)
-        {
-            SendMessage(hwndSource.Handle, WM_SYSCOMMAND, (IntPtr)(61440 + direction), IntPtr.Zero);
-        }
-
-        public void resizeWindow(object sender)
-        {
-            Rectangle clickedRectangle = sender as Rectangle;
-
-            switch (clickedRectangle.Name)
-            {
-                case "top":
-                    activeWin.Cursor = Cursors.ScrollN;
-                    ResizeWindow(ResizeDirection.Top);
-                    break;
-                case "bottom":
-                    activeWin.Cursor = Cursors.ScrollS;
-                    ResizeWindow(ResizeDirection.Bottom);
-                    break;
-                case "left":
-                    activeWin.Cursor = Cursors.ScrollW;
-                    ResizeWindow(ResizeDirection.Left);
-                    break;
-                case "right":
-                    activeWin.Cursor = Cursors.ScrollE;
-                    ResizeWindow(ResizeDirection.Right);
-                    break;
-                case "topLeft":
-                    activeWin.Cursor = Cursors.ScrollNW;
-                    ResizeWindow(ResizeDirection.TopLeft);
-                    break;
-                case "topRight":
-                    activeWin.Cursor = Cursors.ScrollNE;
-                    ResizeWindow(ResizeDirection.TopRight);
-                    break;
-                case "bottomLeft":
-                    activeWin.Cursor = Cursors.ScrollSW;
-                    ResizeWindow(ResizeDirection.BottomLeft);
-                    break;
-                case "bottomRight":
-                    activeWin.Cursor = Cursors.ScrollSE;
-                    ResizeWindow(ResizeDirection.BottomRight);
-                    break;
-                default:
-                    break;
-            }
-
-            WindowState = WindowState.Normal;
-        }
-
-
-        public void displayResizeCursor(object sender)
-        {
-
-            Rectangle clickedRectangle = sender as Rectangle;
-
-            switch (clickedRectangle.Name)
-            {
-                case "top":
-                    activeWin.Cursor = Cursors.ScrollN;
-                    break;
-                case "bottom":
-                    activeWin.Cursor = Cursors.ScrollS;
-                    break;
-                case "left":
-                    activeWin.Cursor = Cursors.ScrollW;
-                    break;
-                case "right":
-                    activeWin.Cursor = Cursors.ScrollE;
-                    break;
-                case "topLeft":
-                    activeWin.Cursor = Cursors.ScrollNW;
-                    break;
-                case "topRight":
-                    activeWin.Cursor = Cursors.ScrollNE;
-                    break;
-                case "bottomLeft":
-                    activeWin.Cursor = Cursors.ScrollSW;
-                    break;
-                case "bottomRight":
-                    activeWin.Cursor = Cursors.ScrollSE;
-                    break;
-                default:
-                    break;
-            }
-            
-        }
-
-        public void resetCursor()
-        {
-            if (Mouse.LeftButton != MouseButtonState.Pressed)
-            {
-                activeWin.Cursor = Cursors.Arrow;
-            }
-        }
 
         private void ResizeDrag(object sender, MouseButtonEventArgs e)
         {
+            Rectangle senderRect = sender as Rectangle;
             if(e.LeftButton == MouseButtonState.Pressed)
-                resizeWindow(sender);
+                resizer.ResizeWindow(senderRect);
         }
         
         private void ResizeMouseEnter(object sender, MouseEventArgs e)
         {
-            displayResizeCursor(sender);
+            resizer.DisplayResizeCursor(sender);
         }
 
         private void ResizeMouseLeave(object sender, MouseEventArgs e)
         {
-            resetCursor();
+            resizer.ResetCursor();
         }
         
         private void ResizeMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (Mouse.LeftButton == MouseButtonState.Released)
-            {
-                activeWin.Cursor = Cursors.Arrow;
-            }
+            resizer.ResetCursor();
         }
         #endregion
 
@@ -245,19 +163,90 @@ namespace NZNZWPF
 
         private void NavButton_Click(object sender, RoutedEventArgs e)
         {
-            Uri dest = null;
-            try
+            Navigate();
+        }
+
+        private void PrevButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(MainWebBrowser.CanGoBack)
+                MainWebBrowser.GoBack();
+        }
+
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MainWebBrowser.CanGoForward)
+                MainWebBrowser.GoForward();
+        }
+
+        private void URLTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                Navigate();
+        }
+
+        private void Navigate()
+        {
+            string url = URLTextBox.Text;
+            if(!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
             {
-                string url = URLTextBox.Text;
-                if (!url.Contains("http://") || !url.Contains("https://"))
-                    url = "https://" + url;
-                dest = new Uri(url);
+                url = "http://google.com/search?q=" + HttpUtility.UrlEncode(url);
+                MessageBox.Show(url.ToString());
             }
-            catch (Exception ex)
+            
+            MainWebBrowser.Navigate(url);
+        }
+
+        private void SetRegistry()
+        {
+            string installKey = @"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION";
+            string entryLabel = System.AppDomain.CurrentDomain.FriendlyName;
+
+            System.OperatingSystem osInfo = System.Environment.OSVersion;
+            string version = osInfo.Version.Major.ToString() + '.' + osInfo.Version.Minor.ToString();
+            uint editFlag = (uint)((version == "6.2") ? 0x2710 : 0x2328); // 6.2 = Windows 8 and therefore IE10
+
+            RegistryKey existingSubKey = Registry.LocalMachine.OpenSubKey(installKey, false);
+
+            if (existingSubKey.GetValue(entryLabel) == null)
             {
-                dest = new Uri("http://google.com");
+                try
+                {
+                    existingSubKey = Registry.LocalMachine.OpenSubKey(installKey, true); // writable key
+                    existingSubKey.SetValue(entryLabel, unchecked((int)editFlag), RegistryValueKind.DWord);
+                }
+                catch (System.Security.SecurityException e)
+                {
+                }
             }
-            MainWebBrowser.Navigate(dest);
+        }
+
+        private void ImageListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ImageListView.SelectedItem == null)
+                return;
+
+            string item = ImageListView.SelectedItem.ToString();
+
+            if(item != null)
+            {
+                ImageItem imageItem = new ImageItem(item);
+                ImageView.Source = imageItem.OriginImage;
+            }
+            else
+            {
+                MessageBox.Show("item is null");
+            }
+        }
+
+        private void ImageView_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            Image imageView = sender as Image;
+            ImageSource bi = imageView.Source;
+
+            if (imageView.ActualHeight < bi.Height && imageView.ActualWidth < bi.Width)
+                imageView.Stretch = Stretch.Uniform;
+            else
+                imageView.Stretch = Stretch.None;
         }
     }
 }
