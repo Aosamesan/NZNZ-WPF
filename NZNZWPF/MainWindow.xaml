@@ -7,8 +7,8 @@
         Title="니짤내짤"
         Width="800"
         Height="600"
-        MinWidth="480"
-        MinHeight="360"
+        MinWidth="600"
+        MinHeight="480"
         BorderBrush="Black"
         Padding="5,-5,5,5"
         ResizeMode="NoResize"
@@ -21,6 +21,17 @@
         <SolidColorBrush x:Key="FavMouseOverBrush" Color="DarkSeaGreen" />
         <SolidColorBrush x:Key="FavButtonBrush" Color="Tomato" />
         <SolidColorBrush x:Key="FrameBorderColor" Color="DarkGreen" />
+        <ContextMenu x:Key="ImageItemMenu">
+            <ContextMenu.Items>
+                <MenuItem Header="Copy" Name="ItemCopyButton" Click="CopyClick"/>
+                <MenuItem Header="Delete Selected Items" Name="ItemDelButton" Click="DelClick"/>
+                <MenuItem Header="Save..." Name="SaveOneButton" Click="SaveOneButton_Click" />
+                <MenuItem Header="Save Selected Items..." Name="SaveSelectedButton" Click="SaveSelectedButton_Click" />
+                <MenuItem Header="Save Selected Items(ZIP)..." Name="SaveSelectedZipButton" Click="SaveSelectedZipButton_Click" />
+                <MenuItem Header="Save All..." Name="SaveAllButton" Click="SaveAllButton_Click" />
+                <MenuItem Header="Save All(ZIP)..." Name="SaveAllZipButton" Click="SaveAllZipButton_Click" />
+            </ContextMenu.Items>
+        </ContextMenu>
     </Window.Resources>
     <Window.Style>
         <Style TargetType="Window">
@@ -378,6 +389,87 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style TargetType="ListViewItem" x:Key="ImageViewItemStyle">
+                <Setter Property="ContextMenu" Value="{DynamicResource ImageItemMenu}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListViewItem">
+                            <Grid x:Name="Panel"
+                                    Background="Transparent">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="300" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Width="250" Height="250" Margin="5">
+                                    <Border BorderBrush="Transparent"
+                                        Background="White"
+                                        CornerRadius="125"
+                                            Name="mask"/>
+                                    <StackPanel>
+                                        <StackPanel.OpacityMask>
+                                            <VisualBrush Visual="{Binding ElementName=mask}" />
+                                        </StackPanel.OpacityMask>
+                                        <Image Grid.Column="0" Stretch="UniformToFill"
+                                            Height="250"
+                                            Width="250"
+                                                   StretchDirection="Both" Opacity=".3" Name="ImageColumn"
+                                                Source="{Binding Path=OriginImage}" />
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Column="1" VerticalAlignment="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="10" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock x:Name="FileNameBlock" Margin="10" FontSize="15" Grid.Row="1"
+                                               Text="{Binding Path=FileName}" />
+                                    <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+                                        <TextBlock FontSize="15" Margin="5" Name="WidthBlock" VerticalAlignment="Bottom">Width : </TextBlock>
+                                        <TextBlock FontSize="20" Margin="5" VerticalAlignment="Bottom" Text="{Binding Path=OriginImage.Width}" />
+                                        <TextBlock FontSize="15" Margin="10,5,5,5" VerticalAlignment="Bottom">Height : </TextBlock>
+                                        <TextBlock FontSize="20" Margin="5" VerticalAlignment="Bottom" Text="{Binding Path=OriginImage.Height}" />
+
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ImageColumn" Property="Opacity" Value=".7" />
+                                    <Setter TargetName="FileNameBlock" Property="FontWeight" Value="Black" />
+                                    <Setter TargetName="FileNameBlock" Property="FontSize" Value="30" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="ImageColumn" Property="Opacity" Value="1" />
+                                    <Setter TargetName="FileNameBlock" Property="FontWeight" Value="Black" />
+                                    <Setter TargetName="FileNameBlock" Property="Foreground" Value="{DynamicResource SelectedBrush}" />
+                                    <Setter TargetName="FileNameBlock" Property="FontSize" Value="30" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <Style TargetType="ListView" x:Key="ImageViewStyle">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListView">
+                            <Border x:Name="Panel"
+                                    Background="Red">
+                                <ListViewItem>
+                                    <ContentPresenter/>
+                                </ListViewItem>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </Border.Resources>
 
         <Grid>
@@ -469,7 +561,7 @@
                                                BaselineOffset="{Binding ElementName=NavButton,
                                                                         Path=BaselineOffset}"
                                                FontSize="20"
-                                               Foreground="Black">
+                                               Foreground="White">
                                         URL
                                     </TextBlock>
                                     <Grid Grid.Column="1" VerticalAlignment="Center">
@@ -506,7 +598,7 @@
                                 <Grid Name="ButtonGrid"
                                       Grid.Row="1"
                                       Background="{DynamicResource SelectedBrush}">
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button Name="ParseButton"
                                                 Margin="10"
                                                 Style="{DynamicResource SubMenuButton}"
@@ -519,39 +611,39 @@
                                                 Click="AppendButton_Click">
                                             Append
                                         </Button>
-
-                                        <Grid>
-                                            <ProgressBar Name="ParseProgressBar"
-                                                         Width="100"
-                                                         Margin="0,10"
-                                                         Maximum="100"
-                                                         Minimum="0" />
-                                        </Grid>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Images">
-                        <Grid>
-                            <Rectangle Panel.ZIndex="1" Fill="White" />
-
-                            <Grid Panel.ZIndex="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
+                        <Grid Background="White">
+                            <StackPanel HorizontalAlignment="Right"
+                                        Orientation="Horizontal"
+                                        Margin="5,5,20,5"
+                                        Background="White"
+                                        >
                                 <Image x:Name="ImageView"
-                                       Grid.Column="1"
-                                       Opacity=".4"
-                                       SourceUpdated="ImageView_SourceUpdated" 
-                                       />
-                            </Grid>
-                            <ListView x:Name="ImageListView"
-                                      Panel.ZIndex="3"
-                                      Background="Transparent"
-                                      ItemsSource="{Binding Source={StaticResource ImageItemsKey}}"
-                                      SelectionChanged="ImageListView_SelectionChanged" />
+                                           SourceUpdated="ImageView_SourceUpdated" 
+                                           StretchDirection="DownOnly"
+                                       Stretch="UniformToFill"
+                                           Opacity=".5"
+                                           />
+                            </StackPanel>
+                            <Border
+                                Panel.ZIndex="3"
+                                    BorderBrush="{DynamicResource UnSelectedBrush}"
+                                    BorderThickness="2"
+                                    CornerRadius="10"
+                                    Margin="3">
+                                <ListView x:Name="ImageListView" Margin="5"
+                                          Background="Transparent"
+                                          ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                          ItemsSource="{Binding Source={StaticResource ImageItemsKey}}"
+                                          BorderThickness="0"
+                                          SelectionChanged="ImageListView_SelectionChanged" 
+                                          ItemContainerStyle="{DynamicResource ImageViewItemStyle}"/>
+                            </Border>
                         </Grid>
                     </TabItem>
                 </TabControl.Items>

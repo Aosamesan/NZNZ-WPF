@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Controls;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Windows;
 
 namespace NZNZWPF
 {
@@ -26,6 +27,7 @@ namespace NZNZWPF
             {
                 url = value;
                 OnPropertyChanged("URL");
+                OnPropertyChanged("FileName");
 
                 OriginImage = imageFromUrl(URL);
             }
@@ -78,7 +80,7 @@ namespace NZNZWPF
         public override bool Equals(object obj)
         {
             ImageItem item = obj as ImageItem;
-
+            
             if (item == null)
                 return false;
             return item.URL == URL;
@@ -144,6 +146,14 @@ namespace NZNZWPF
             foreach (ImageItem item in Items)
                 if (item.URL == url)
                     return item.OriginImage;
+            return null;
+        }
+
+        public ImageItem FindByURL(string url)
+        {
+            foreach (ImageItem item in Items)
+                if (item.URL == url)
+                    return item;
             return null;
         }
 

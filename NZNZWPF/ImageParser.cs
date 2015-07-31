@@ -121,37 +121,13 @@ namespace NZNZWPF
         
         private List<string> FirstStep(ref string html)
         {
-            Regex first = new Regex("(<.*?)(http|https)(://)([^<>?&\"']*)(/[a-zA-Z0-9-_]*?)(\\.jpg|\\.png|\\.bmp|\\.jpeg|\\.gif|\\s)[<>?&\"'](.*?>)");
-            MatchCollection matches = first.Matches(html);
-            Regex second = new Regex("(http|https)(://)([^<>?&\"']*)(/[a-zA-Z0-9-_]*?)(\\.jpg|\\.png|\\.bmp|\\.jpeg|\\.gif|\\s)$");
-
+            Regex first = new Regex("(http|https)(://)([^<>\"'?&]*?\\.?)(jpg|png|bmp|gif|jpeg)");
+            MatchCollection mc = first.Matches(html);
             List<string> list = new List<string>();
-            foreach(Match m in matches)
+
+            foreach(Match m in mc)
             {
-                string filename = "";
-                for(int i = 2; i < m.Groups.Count - 1; i++)
-                {
-                    filename += m.Groups[i];
-                }
-
-                if (string.IsNullOrWhiteSpace(filename))
-                    continue;
-                if (!second.IsMatch(filename))
-                    continue;
-
-                string extension = filename.Split('.').Last();
-
-                switch (extension.ToUpper())
-                {
-                    case "HTML":
-                    case "CSS":
-                    case "JS":
-                    case "JSP":
-                        break;
-                    default:
-                        list.Add(filename);
-                        break;
-                }
+                list.Add(m.Value);
             }
 
             return list;
