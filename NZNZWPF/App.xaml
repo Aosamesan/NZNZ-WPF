@@ -4,6 +4,157 @@
              xmlns:local="clr-namespace:NZNZWPF"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <!--  Brushes  -->
+        <SolidColorBrush x:Key="UnSelectedBrush" Color="DarkGray" />
+        <SolidColorBrush x:Key="SelectedBrush" Color="Gray" />
+        <SolidColorBrush x:Key="FavMouseOverBrush" Color="Gray" />
+        <SolidColorBrush x:Key="FavButtonBrush" Color="Black" Opacity=".3" />
+        <SolidColorBrush x:Key="FrameBorderColor" Color="Black" />
+
+        <!--  Favortie Items  -->
+        <local:FavoriteCollection x:Key="FavoriteCollection" />
+
+        <!--  Button Styles  -->
+        <Style x:Key="MenuButton" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                                Width="{Binding ElementName=Border,
+                                                Path=ActualHeight}"
+                                Height="33"
+                                Margin="-1,0,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource UnSelectedBrush}"
+                                BorderBrush="{DynamicResource UnSelectedBrush}">
+                            <TextBlock x:Name="TextBlock"
+                                       Margin="0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Consolas"
+                                       FontSize="22"
+                                       FontWeight="ExtraBlack"
+                                       Foreground="White"
+                                       TextWrapping="Wrap">
+                                <ContentPresenter Margin="0"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                            </TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource SelectedBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CloseMenuButton" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                                Width="{Binding ElementName=Border,
+                                                Path=ActualHeight}"
+                                Height="33"
+                                Margin="-1,0,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource UnSelectedBrush}"
+                                BorderBrush="{DynamicResource UbSelectedBrush}">
+                            <TextBlock x:Name="TextBlock"
+                                       Margin="0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Consolas"
+                                       FontSize="22"
+                                       Foreground="White"
+                                       TextWrapping="Wrap">
+                                <ContentPresenter Margin="0"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                            </TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="Red" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FavMenuButton" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                                Height="33"
+                                Margin="-1,0,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource FavButtonBrush}"
+                                BorderBrush="{DynamicResource UnSelectedBrush}">
+                            <TextBlock x:Name="TextBlock"
+                                       Margin="10"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       Foreground="White"
+                                       TextWrapping="Wrap">
+                                <ContentPresenter Margin="0"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                            </TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource FavMouseOverBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SubMenuButton" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Panel"
+                                Width="Auto"
+                                Height="30"
+                                BorderBrush="White"
+                                BorderThickness="2"
+                                Padding="10,0">
+                            <TextBlock x:Name="TextBlock"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontFamily="Consolas"
+                                       FontSize="20"
+                                       Foreground="White">
+                                <ContentPresenter />
+                            </TextBlock>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource UnSelectedBrush}" />
+                                <Setter TargetName="TextBlock" Property="Foreground" Value="{DynamicResource UnSelectedBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Panel" Property="Background" Value="{Binding ElementName=Panel, Path=BorderBrush}" />
+                                <Setter TargetName="TextBlock" Property="Foreground" Value="{DynamicResource SelectedBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
+
 </Application>

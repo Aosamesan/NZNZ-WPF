@@ -50,8 +50,8 @@ namespace NZNZWPF
         private Action<ImageItem> InsertItem;
 
         private DoubleAnimation appearAnimation;
-
-        private ImageItemCollection cacheCollection;
+        
+        private FavoriteCollection favoriteColleciton;
 
         private static readonly string FileFilter =
             @"JPG File(*.jpg,*.jpeg)|*jpg,*jpeg|GIF File(*.gif)|*.gif|PNG File(*.png)|*.png|Bitmap File(*.bmp)|*.bmp";
@@ -92,8 +92,6 @@ namespace NZNZWPF
             MainWebBrowser.LoadCompleted += MyWebBrowser_LoadCompleted;
 
             collection = Resources["ImageItemsKey"] as ImageItemCollection;
-            cacheCollection = new ImageItemCollection();
-
 
             #region MethodInvoker
             GetURL = new Func<string>(() => { return URLTextBox.Text; });
@@ -101,7 +99,6 @@ namespace NZNZWPF
             ClearList = new Action(() =>
             {
                 collection.Clear();
-                cacheCollection.Clear();
             });
             Contains = new Func<string, bool>((url) => { return collection.Contains(url); });
             InsertItem = new Action<ImageItem>((item) => collection.Add(item));
@@ -116,6 +113,10 @@ namespace NZNZWPF
             appearAnimation.Duration = new Duration(TimeSpan.FromSeconds(2.5));
             appearAnimation.AutoReverse = true;
             #endregion
+
+            favoriteColleciton = Application.Current.Resources["FavoriteCollection"] as FavoriteCollection;
+            if (favoriteColleciton == null)
+                throw new NullReferenceException();
         }
 
         private void onNavigating(object sender, NavigatingCancelEventArgs e)
@@ -271,7 +272,12 @@ namespace NZNZWPF
 
         private void FavButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Favorties");
+            FavortiesDialog dlg = new FavortiesDialog();
+
+            if(dlg.ShowDialog() == true)
+            {
+                MainWebBrowser.Navigate(dlg.SelectedItem.URL);
+            }
         }
 
         private void NavButton_Click(object sender, RoutedEventArgs e)
@@ -331,11 +337,13 @@ namespace NZNZWPF
                 {
                     existingSubKey = Registry.LocalMachine.OpenSubKey(installKey, true); // writable key
                     existingSubKey.SetValue(entryLabel, unchecked((int)editFlag), RegistryValueKind.DWord);
+                    MessageBox.Show("레지스트리가 등록되었습니다. 관리자 권한 해제 후 다시 실행해주세요.");
                 }
                 catch (System.Security.SecurityException e)
                 {
-                    MessageBox.Show(e.Message);
+                    MessageBox.Show("관리자 권한으로 한 번 실행해 주세요.");
                 }
+                Close();
             }
         }
 
@@ -413,8 +421,32 @@ namespace NZNZWPF
                 ImageItem item = collection.FindByURL(url);
                 collection.Remove(item);
             }
+        }
 
-            
+        private void DelLessSize(double width, double height, bool isAnd = true)
+        {
+            List<string> urls = new List<string>();
+            Func<ImageItem, bool> comparer;
+
+            if (isAnd)
+            {
+                comparer = (item) => item.OriginImage.Width < width && item.OriginImage.Height < height;
+            }
+            else
+            {
+                comparer = (item) => item.OriginImage.Width < width || item.OriginImage.Height < height;
+            }
+            foreach (ImageItem item in ImageListView.Items)
+            {
+                if (comparer(item))
+                    urls.Add(item.URL);
+            }
+
+            foreach (var url in urls)
+            {
+                ImageItem item = collection.FindByURL(url);
+                collection.Remove(item);
+            }
         }
 
         private void SetDirectoryLocation(string filePath)
@@ -614,6 +646,32 @@ namespace NZNZWPF
                     }
                 }
             }
+        }
+
+        private void DelButton_Click(object sender, RoutedEventArgs e)
+        {
+            SizeDialog dlg = new SizeDialog();
+
+            if(dlg.ShowDialog() == true)
+            {
+                DelLessSize(dlg.InputWidth, dlg.InputHeight, dlg.IsAnd);
+            }
+        }
+
+        private void AddFavButton_Click(object sender, RoutedEventArgs e)
+        {
+            FavoriteAddDialog dlg = new FavoriteAddDialog();
+
+            if(dlg.ShowDialog(((dynamic)MainWebBrowser.Document).Title, MainWebBrowser.Source.ToString()) == true)
+            {
+                FavoriteItem item = new FavoriteItem(dlg.FavTitle, dlg.FavURL);
+                favoriteColleciton.Add(item);
+            }
+        }
+
+        private void NotImageDelButton_Click(object sender, RoutedEventArgs e)
+        {
+            DelLessSize(2, 2, false);
         }
     }
 }

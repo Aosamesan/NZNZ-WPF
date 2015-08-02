@@ -57,6 +57,10 @@ namespace NZNZWPF
         {
             URL = url;
             FileName = URL.Split('/').Last();
+            if (string.IsNullOrWhiteSpace(URL.Split('.').Last()))
+            {
+                FileName += ".png";
+            }
         }
 
 
@@ -65,6 +69,7 @@ namespace NZNZWPF
             BitmapImage image = new BitmapImage();
             image.BeginInit();
             image.UriSource = new Uri(url, UriKind.RelativeOrAbsolute);
+            image.DownloadCompleted += (sender, e) => OnPropertyChanged("OriginImage");
             image.EndInit();
 
             BitmapImage local = image.Clone();
@@ -86,6 +91,10 @@ namespace NZNZWPF
             return item.URL == URL;
         }
 
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;

@@ -15,25 +15,45 @@
         WindowStyle="None"
         mc:Ignorable="d">
     <Window.Resources>
+        <!--  Collections  -->
         <local:ImageItemCollection x:Key="ImageItemsKey" />
-        <SolidColorBrush x:Key="UnSelectedBrush" Color="DarkSeaGreen" />
-        <SolidColorBrush x:Key="SelectedBrush" Color="SeaGreen" />
-        <SolidColorBrush x:Key="FavMouseOverBrush" Color="DarkSeaGreen" />
-        <SolidColorBrush x:Key="FavButtonBrush" Color="Tomato" />
-        <SolidColorBrush x:Key="FrameBorderColor" Color="DarkGreen" />
+
+        <!--  ListView ContextMenu  -->
         <ContextMenu x:Key="ImageItemMenu">
             <ContextMenu.Items>
-                <MenuItem Header="Copy" Name="ItemCopyButton" Click="CopyClick"/>
-                <MenuItem Header="Delete Selected Items" Name="ItemDelButton" Click="DelClick"/>
-                <MenuItem Header="Save..." Name="SaveOneButton" Click="SaveOneButton_Click" />
-                <MenuItem Header="Save Selected Items..." Name="SaveSelectedButton" Click="SaveSelectedButton_Click" />
-                <MenuItem Header="Save Selected Items(ZIP)..." Name="SaveSelectedZipButton" Click="SaveSelectedZipButton_Click" />
-                <MenuItem Header="Save All..." Name="SaveAllButton" Click="SaveAllButton_Click" />
-                <MenuItem Header="Save All(ZIP)..." Name="SaveAllZipButton" Click="SaveAllZipButton_Click" />
+                <MenuItem Name="ItemCopyButton"
+                          Click="CopyClick"
+                          Header="복사" />
+                <MenuItem Name="NotImageDelButton"
+                          Click="NotImageDelButton_Click"
+                          Header="이미지가 아닌 것 지우기" />
+                <MenuItem Name="DelButton"
+                          Click="DelButton_Click"
+                          Header="사이즈 필터링..." />
+                <MenuItem Name="ItemDelButton"
+                          Click="DelClick"
+                          Header="선택된 이미지 지우기" />
+                <MenuItem Name="SaveOneButton"
+                          Click="SaveOneButton_Click"
+                          Header="저장..." />
+                <MenuItem Name="SaveSelectedButton"
+                          Click="SaveSelectedButton_Click"
+                          Header="선택한 이미지 저장..." />
+                <MenuItem Name="SaveSelectedZipButton"
+                          Click="SaveSelectedZipButton_Click"
+                          Header="선택한 이미지 저장(ZIP)..." />
+                <MenuItem Name="SaveAllButton"
+                          Click="SaveAllButton_Click"
+                          Header="모두 저장..." />
+                <MenuItem Name="SaveAllZipButton"
+                          Click="SaveAllZipButton_Click"
+                          Header="모두 저장(ZIP)..." />
             </ContextMenu.Items>
         </ContextMenu>
     </Window.Resources>
+
     <Window.Style>
+        <!--  Main Window Style  -->
         <Style TargetType="Window">
             <Setter Property="Template">
                 <Setter.Value>
@@ -147,6 +167,7 @@
             </Setter>
         </Style>
     </Window.Style>
+
     <Border Name="MainBorder"
             BorderBrush="{DynamicResource FrameBorderColor}"
             BorderThickness="2">
@@ -204,6 +225,7 @@
                                 <Border Name="Border"
                                         Grid.Row="1"
                                         Margin="0,-1,-3,-1"
+                                        Panel.ZIndex="2"
                                         BorderBrush="{DynamicResource SelectedBrush}"
                                         BorderThickness="3,5,3,3">
                                     <ContentPresenter x:Name="SelectedContentHost" ContentSource="SelectedContent" />
@@ -214,225 +236,75 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="MenuButton" TargetType="Button">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="Border"
-                                    Width="{Binding ElementName=Border,
-                                                    Path=ActualHeight}"
-                                    Height="33"
-                                    Margin="-1,0,0,0"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Background="{DynamicResource UnSelectedBrush}"
-                                    BorderBrush="{DynamicResource UnSelectedBrush}">
-                                <TextBlock x:Name="TextBlock"
-                                           Margin="0"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontFamily="Consolas"
-                                           FontSize="22"
-                                           FontWeight="ExtraBlack"
-                                           Foreground="White"
-                                           TextWrapping="Wrap">
-                                    <ContentPresenter Margin="0"
-                                                      HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center" />
-                                </TextBlock>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource SelectedBrush}" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
 
-            <Style x:Key="CloseMenuButton" TargetType="Button">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="Border"
-                                    Width="{Binding ElementName=Border,
-                                                    Path=ActualHeight}"
-                                    Height="33"
-                                    Margin="-1,0,0,0"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Background="{DynamicResource UnSelectedBrush}"
-                                    BorderBrush="{DynamicResource UbSelectedBrush}">
-                                <TextBlock x:Name="TextBlock"
-                                           Margin="0"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontFamily="Consolas"
-                                           FontSize="22"
-                                           Foreground="White"
-                                           TextWrapping="Wrap">
-                                    <ContentPresenter Margin="0"
-                                                      HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center" />
-                                </TextBlock>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="Red" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="FavMenuButton" TargetType="Button">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="Border"
-                                    Width="{Binding ElementName=Border,
-                                                    Path=ActualHeight}"
-                                    Height="33"
-                                    Margin="-1,0,0,0"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Background="{DynamicResource FavButtonBrush}"
-                                    BorderBrush="{DynamicResource UnSelectedBrush}">
-                                <TextBlock x:Name="TextBlock"
-                                           Margin="0"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontFamily="Consolas"
-                                           FontSize="22"
-                                           Foreground="White"
-                                           TextWrapping="Wrap">
-                                    <ContentPresenter Margin="0"
-                                                      HorizontalAlignment="Center"
-                                                      VerticalAlignment="Center" />
-                                </TextBlock>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource FavMouseOverBrush}" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="NavButton" TargetType="Button">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="Panel"
-                                    Width="30"
-                                    Height="30"
-                                    BorderBrush="White"
-                                    BorderThickness="2">
-                                <TextBlock x:Name="TextBlock"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontFamily="Consolas"
-                                           FontSize="20"
-                                           Foreground="White">
-                                    <ContentPresenter />
-                                </TextBlock>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource UnSelectedBrush}" />
-                                    <Setter TargetName="TextBlock" Property="Foreground" Value="{DynamicResource UnSelectedBrush}" />
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Panel" Property="Background" Value="{Binding ElementName=Panel, Path=BorderBrush}" />
-                                    <Setter TargetName="TextBlock" Property="Foreground" Value="{DynamicResource SelectedBrush}" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="SubMenuButton" TargetType="Button">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="Panel"
-                                    Width="Auto"
-                                    Height="30"
-                                    BorderBrush="White"
-                                    BorderThickness="2"
-                                    Padding="10,0">
-                                <TextBlock x:Name="TextBlock"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           FontFamily="Consolas"
-                                           FontSize="20"
-                                           Foreground="White">
-                                    <ContentPresenter />
-                                </TextBlock>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter TargetName="Panel" Property="BorderBrush" Value="{DynamicResource UnSelectedBrush}" />
-                                    <Setter TargetName="TextBlock" Property="Foreground" Value="{DynamicResource UnSelectedBrush}" />
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Panel" Property="Background" Value="{Binding ElementName=Panel, Path=BorderBrush}" />
-                                    <Setter TargetName="TextBlock" Property="Foreground" Value="{DynamicResource SelectedBrush}" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style TargetType="ListViewItem" x:Key="ImageViewItemStyle">
+            <Style x:Key="ImageViewItemStyle" TargetType="ListViewItem">
                 <Setter Property="ContextMenu" Value="{DynamicResource ImageItemMenu}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ListViewItem">
-                            <Grid x:Name="Panel"
-                                    Background="Transparent">
+                            <Grid x:Name="Panel" Background="Transparent">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="300" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
 
-                                <Grid Width="250" Height="250" Margin="5">
-                                    <Border BorderBrush="Transparent"
-                                        Background="White"
-                                        CornerRadius="125"
-                                            Name="mask"/>
+                                <Grid Width="150"
+                                      Height="150"
+                                      Margin="5">
+                                    <Border Name="mask"
+                                            Background="White"
+                                            BorderBrush="Transparent"
+                                            CornerRadius="75" />
                                     <StackPanel>
                                         <StackPanel.OpacityMask>
                                             <VisualBrush Visual="{Binding ElementName=mask}" />
                                         </StackPanel.OpacityMask>
-                                        <Image Grid.Column="0" Stretch="UniformToFill"
-                                            Height="250"
-                                            Width="250"
-                                                   StretchDirection="Both" Opacity=".3" Name="ImageColumn"
-                                                Source="{Binding Path=OriginImage}" />
+                                        <Image Name="ImageColumn"
+                                               Grid.Column="0"
+                                               Width="150"
+                                               Height="150"
+                                               Opacity=".3"
+                                               Source="{Binding Path=OriginImage}"
+                                               Stretch="UniformToFill"
+                                               StretchDirection="Both" />
                                     </StackPanel>
                                 </Grid>
                                 <Grid Grid.Column="1" VerticalAlignment="Center">
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="10" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
-                                    <TextBlock x:Name="FileNameBlock" Margin="10" FontSize="15" Grid.Row="1"
+                                    <TextBlock x:Name="FileNameBlock"
+                                               Grid.Row="1"
+                                               Margin="10"
+                                               FontSize="15"
                                                Text="{Binding Path=FileName}" />
-                                    <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
-                                        <TextBlock FontSize="15" Margin="5" Name="WidthBlock" VerticalAlignment="Bottom">Width : </TextBlock>
-                                        <TextBlock FontSize="20" Margin="5" VerticalAlignment="Bottom" Text="{Binding Path=OriginImage.Width}" />
-                                        <TextBlock FontSize="15" Margin="10,5,5,5" VerticalAlignment="Bottom">Height : </TextBlock>
-                                        <TextBlock FontSize="20" Margin="5" VerticalAlignment="Bottom" Text="{Binding Path=OriginImage.Height}" />
+                                    <TextBlock Grid.Row="2" Text="{Binding Path=URL}" />
+                                    <StackPanel Grid.Row="3"
+                                                VerticalAlignment="Bottom"
+                                                Orientation="Horizontal">
+                                        <TextBlock Name="WidthBlock"
+                                                   Margin="5"
+                                                   VerticalAlignment="Bottom"
+                                                   FontSize="15">
+                                            Width :
+                                        </TextBlock>
+                                        <TextBlock Margin="5"
+                                                   VerticalAlignment="Bottom"
+                                                   FontSize="20"
+                                                   Text="{Binding Path=OriginImage.Width}" />
+                                        <TextBlock Margin="10,5,5,5"
+                                                   VerticalAlignment="Bottom"
+                                                   FontSize="15">
+                                            Height :
+                                        </TextBlock>
+                                        <TextBlock Margin="5"
+                                                   VerticalAlignment="Bottom"
+                                                   FontSize="20"
+                                                   Text="{Binding Path=OriginImage.Height}" />
 
                                     </StackPanel>
                                 </Grid>
@@ -455,15 +327,14 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            
-            <Style TargetType="ListView" x:Key="ImageViewStyle">
+
+            <Style x:Key="ImageViewStyle" TargetType="ListView">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ListView">
-                            <Border x:Name="Panel"
-                                    Background="Red">
+                            <Border x:Name="Panel" Background="Red">
                                 <ListViewItem>
-                                    <ContentPresenter/>
+                                    <ContentPresenter />
                                 </ListViewItem>
                             </Border>
                         </ControlTemplate>
@@ -508,24 +379,24 @@
                             Grid.Column="1"
                             Click="FavButton_Click"
                             Style="{DynamicResource FavMenuButton}">
-                        F
+                        즐겨찾기
                     </Button>
                 </Grid>
                 <StackPanel Grid.Column="2"
-                            Margin="0,0,-3,0"
+                            Margin="0,1,0,0"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">
-                    <Button Name="MinimizeButton" Style="{DynamicResource MenuButton}">m</Button>
-                    <Button Name="MaximizeButton" Style="{DynamicResource MenuButton}">M</Button>
+                    <Button Name="MinimizeButton" Style="{DynamicResource MenuButton}">소</Button>
+                    <Button Name="MaximizeButton" Style="{DynamicResource MenuButton}">대</Button>
                     <Button Name="CloseButton" Style="{DynamicResource CloseMenuButton}">X</Button>
                 </StackPanel>
             </Grid>
 
             <TabControl x:Name="MainTabControl"
                         Grid.RowSpan="2"
-                        Margin="0,-5,0,0">
+                        Margin="0,-5,3,0">
                 <TabControl.Items>
-                    <TabItem Header="Browser">
+                    <TabItem Header="브라우저">
                         <Grid Margin="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
@@ -577,20 +448,20 @@
                                         <Button Name="NavButton"
                                                 Margin="5"
                                                 Click="NavButton_Click"
-                                                Style="{DynamicResource NavButton}">
-                                            Go
+                                                Style="{DynamicResource SubMenuButton}">
+                                            이동
                                         </Button>
                                         <Button Name="PrevButton"
                                                 Margin="5"
                                                 Click="PrevButton_Click"
-                                                Style="{DynamicResource NavButton}">
-                                            Bk
+                                                Style="{DynamicResource SubMenuButton}">
+                                            뒤로
                                         </Button>
                                         <Button Name="NextButton"
                                                 Margin="5"
                                                 Click="NextButton_Click"
-                                                Style="{DynamicResource NavButton}">
-                                            Fw
+                                                Style="{DynamicResource SubMenuButton}">
+                                            앞으로
                                         </Button>
                                     </StackPanel>
                                 </Grid>
@@ -598,51 +469,54 @@
                                 <Grid Name="ButtonGrid"
                                       Grid.Row="1"
                                       Background="{DynamicResource SelectedBrush}">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                                         <Button Name="ParseButton"
                                                 Margin="10"
-                                                Style="{DynamicResource SubMenuButton}"
-                                                Click="ParseButton_Click">
-                                            Parse
-                                        </Button>
+                                                Click="ParseButton_Click"
+                                                Content="지우고 추가"
+                                                Style="{DynamicResource SubMenuButton}" />
                                         <Button Name="AppendButton"
                                                 Margin="10"
-                                                Style="{DynamicResource SubMenuButton}"
-                                                Click="AppendButton_Click">
-                                            Append
+                                                Click="AppendButton_Click"
+                                                Style="{DynamicResource SubMenuButton}">
+                                            추가
+                                        </Button>
+                                        <Button Name="AddFavButton"
+                                                Margin="10"
+                                                Click="AddFavButton_Click"
+                                                Style="{DynamicResource SubMenuButton}">
+                                            즐겨찾기 추가
                                         </Button>
                                     </StackPanel>
                                 </Grid>
                             </Grid>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Images">
+                    <TabItem Header="이미지">
                         <Grid Background="White">
-                            <StackPanel HorizontalAlignment="Right"
-                                        Orientation="Horizontal"
-                                        Margin="5,5,20,5"
+                            <StackPanel Margin="5,5,20,5"
+                                        HorizontalAlignment="Right"
                                         Background="White"
-                                        >
+                                        Orientation="Horizontal">
                                 <Image x:Name="ImageView"
-                                           SourceUpdated="ImageView_SourceUpdated" 
-                                           StretchDirection="DownOnly"
+                                       Opacity=".5"
+                                       SourceUpdated="ImageView_SourceUpdated"
                                        Stretch="UniformToFill"
-                                           Opacity=".5"
-                                           />
+                                       StretchDirection="DownOnly" />
                             </StackPanel>
-                            <Border
-                                Panel.ZIndex="3"
+                            <Border Margin="3"
+                                    Panel.ZIndex="3"
                                     BorderBrush="{DynamicResource UnSelectedBrush}"
                                     BorderThickness="2"
-                                    CornerRadius="10"
-                                    Margin="3">
-                                <ListView x:Name="ImageListView" Margin="5"
+                                    CornerRadius="10">
+                                <ListView x:Name="ImageListView"
+                                          Margin="5"
                                           Background="Transparent"
-                                          ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                          ItemsSource="{Binding Source={StaticResource ImageItemsKey}}"
                                           BorderThickness="0"
-                                          SelectionChanged="ImageListView_SelectionChanged" 
-                                          ItemContainerStyle="{DynamicResource ImageViewItemStyle}"/>
+                                          ItemContainerStyle="{DynamicResource ImageViewItemStyle}"
+                                          ItemsSource="{Binding Source={StaticResource ImageItemsKey}}"
+                                          ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                          SelectionChanged="ImageListView_SelectionChanged" />
                             </Border>
                         </Grid>
                     </TabItem>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using mshtml;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -19,26 +18,6 @@ namespace NZNZWPF
             sourceParser = parser;
         }
 
-        public List<string> GetImageSources(IHTMLDocument2 doc)
-        {
-            List<string> list = null;
-
-            if (doc.images.length > 0)
-            {
-                list = new List<string>();
-
-                foreach(HTMLImg img in doc.images)
-                {
-                    string tmp = sourceParser.Parse(img.src);
-
-                    if (!string.IsNullOrWhiteSpace(tmp))
-                        list.Add(tmp);
-                }
-            }
-            
-            return list;
-        }
-
         public ImageItemCollection GetImageSources(ref string html)
         {
             return sourceParser.ParseAll(ref html);
@@ -47,70 +26,50 @@ namespace NZNZWPF
 
     interface ISourceParser
     {
-        string Parse(string url);
         ImageItemCollection ParseAll(ref string html);
     }
 
     class SourceParser : ISourceParser
     {
-        public string Parse(string url)
+        public string Resize(string url)
         {
             string filename = url.Split('/').Last();
             
             if (string.IsNullOrWhiteSpace(filename))
                 return null;
 
-            Regex second = new Regex("(http|https)(://)([^<>\"'?&]*?)([-_]?[m0-9]{1,}[xX][0-9]*?)($|\\.jpg|\\.png|\\.bmp|\\.jpeg|\\.gif)");
-            
-            Match m = second.Match(url);
+            Regex sizeRegex = new Regex("[-_]?[0-9]{3,}[_xX][0-9]{3,}\\.");
 
-            if (string.IsNullOrWhiteSpace(m.Value))
-                return url;
-
-            string result = "";
-
-            for (int i = 1; i < 7; i++)
-                if(i != 4)
-                    result += m.Groups[i];
-            return result;
-        }
-
-        public bool IsImageURL(string url)
-        {
-            bool result = true;
-            if (url == null)
-                return false;
-
-            try
+            if (sizeRegex.IsMatch(filename))
             {
-                BitmapImage image = new BitmapImage(new Uri(url));
-                
+                string sizeStr = sizeRegex.Match(filename).Value;
+                return url.Replace(sizeStr, ".");
             }
-            catch(Exception e)
-            {
-            }
-
-            return result;
+            return null;
         }
 
         public ImageItemCollection ParseAll(ref string html)
         {
+            ImageItem item;
             ImageItemCollection list = null;
-            List<string> mc = FirstStep(ref html);
+            MatchCollection mc = FirstStep(ref html);
 
             if (mc.Count < 1)
                 return null;
 
+            List<string> urls = SecondStep(mc);
             list = new ImageItemCollection();
 
-            foreach(string m in mc)
+            foreach(string m in urls)
             {
-                IsImageURL("Http://www.naver.com/");
-                string src = Parse(m);
-                if (!IsImageURL(src))
-                    continue;
-                ImageItem item = new ImageItem(src);
+                item = new ImageItem(m);
                 list.Add(item);
+                string resized = Resize(m);
+                if (resized != null)
+                {
+                    item = new ImageItem(resized);
+                    list.Add(item);
+                }
             }
 
             if (list.Count < 1)
@@ -119,20 +78,45 @@ namespace NZNZWPF
             return list;
         }
         
-        private List<string> FirstStep(ref string html)
+        private MatchCollection FirstStep(ref string html)
         {
-            Regex first = new Regex("(http|https)(://)([^<>\"'?&]*?\\.?)(jpg|png|bmp|gif|jpeg)");
-            MatchCollection mc = first.Matches(html);
+            Regex first = new Regex("(src=[\"']?|;)(http|https)(://)([^<>\"'?&=]*?)[<>\"'?&=]");
+            
+            return first.Matches(html);
+        }
+
+        private List<string> SecondStep(MatchCollection mc)
+        {
             List<string> list = new List<string>();
 
             foreach(Match m in mc)
             {
-                list.Add(m.Value);
+                string origin = m.Value;
+                string first = "";
+                for(int i = 2; i < m.Groups.Count; i++)
+                {
+                    first += m.Groups[i];
+                }
+                string extension = first.Split('.').Last();
+                switch (extension.ToLower())
+                {
+                    case "js":
+                    case "html":
+                    case "htm":
+                    case "php":
+                    case "asp":
+                    case "jsp":
+                    case "aspx":
+                    case "svg":
+                    case "css":
+                        break;
+                    default:
+                        list.Add(first);
+                        break;
+                }
             }
 
             return list;
         }
     }
-
-
 }
