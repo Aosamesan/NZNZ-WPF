@@ -1,0 +1,76 @@
+﻿<Window x:Class="NZNZWPF.ImageFile"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NZNZWPF"
+        mc:Ignorable="d"
+        WindowStyle="ToolWindow"
+        WindowStartupLocation="CenterScreen"
+        Title="ImageFile" Height="200" Width="500">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock">
+                <Style.Setters>
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="Margin" Value="5" />
+                </Style.Setters>
+            </Style>
+            <Style TargetType="TextBox">
+                <Style.Setters>
+                    <Setter Property="FontSize" Value="20" />
+                    <Setter Property="Margin" Value="5" />
+                </Style.Setters>
+            </Style>
+            <Style TargetType="Button">
+                <Style.Setters>
+                    <Setter Property="Padding" Value="10,2" />
+                    <Setter Property="FontSize" Value="15" />
+                    <Setter Property="Margin" Value="5" />
+                </Style.Setters>
+            </Style>
+        </Grid.Resources>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock>FileName</TextBlock>
+            <TextBox Name="NameBox" Grid.Column="1" />
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock>URL</TextBlock>
+            <TextBox Name="URLBox" Grid.Column="1" IsReadOnly="{Binding ElementName=URLCheckBox,Path=IsChecked}" />
+        </Grid>
+
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <CheckBox Name="URLCheckBox" Grid.Column="1" VerticalAlignment="Center" IsChecked="True"
+                      Margin="10,0" >URL 수정 안함</CheckBox>
+            <Button Name="ApplyButton" Grid.Column="2" Click="ApplyButton_Click">확인</Button>
+            <Button Name="CancelButton" Grid.Column="3" Click="CancelButton_Click">취소</Button>
+        </Grid>
+    </Grid>
+</Window>

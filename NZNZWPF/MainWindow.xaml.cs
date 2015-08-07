@@ -673,5 +673,30 @@ namespace NZNZWPF
         {
             DelLessSize(2, 2, false);
         }
+
+        private void ImageListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            ImageItem item = ImageListView.SelectedItem as ImageItem;
+
+            if(item != null)
+            {
+                ImageFile dlg = new ImageFile();
+
+                if(dlg.ShowDialog(item) == true)
+                {
+                    if (!collection.IsUniqueFileName(item))
+                    {
+                        MessageBox.Show("이름이 중복되었습니다 : " + item.FileName);
+                        item.FileName = dlg.OriginFileName;
+                    }
+                }
+            }
+
+        }
+
+        private void ItemNumbering_Click(object sender, RoutedEventArgs e)
+        {
+            collection.FileNameNumbering(false);
+        }
     }
 }

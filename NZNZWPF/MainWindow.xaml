@@ -24,6 +24,9 @@
                 <MenuItem Name="ItemCopyButton"
                           Click="CopyClick"
                           Header="복사" />
+                <MenuItem Name="ItemNumbering"
+                          Click="ItemNumbering_Click"
+                          Header="이미지 파일 이름 넘버링..." />
                 <MenuItem Name="NotImageDelButton"
                           Click="NotImageDelButton_Click"
                           Header="이미지가 아닌 것 지우기" />
@@ -295,7 +298,7 @@
                                         <TextBlock Margin="5"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="20"
-                                                   Text="{Binding Path=OriginImage.Width}" />
+                                                   Text="{Binding Path=Width}" />
                                         <TextBlock Margin="10,5,5,5"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="15">
@@ -304,7 +307,7 @@
                                         <TextBlock Margin="5"
                                                    VerticalAlignment="Bottom"
                                                    FontSize="20"
-                                                   Text="{Binding Path=OriginImage.Height}" />
+                                                   Text="{Binding Path=Height}" />
 
                                     </StackPanel>
                                 </Grid>
@@ -407,8 +410,8 @@
                             <WebBrowser Name="MainWebBrowser"
                                         Panel.ZIndex="1"
                                         Language="UTF-8"
-                                        Source="http://google.com" />
-
+                                        Source="http://google.com" 
+                                        />
 
                             <Grid Grid.Row="1" Background="White">
                                 <Grid.RowDefinitions>
@@ -516,7 +519,9 @@
                                           ItemContainerStyle="{DynamicResource ImageViewItemStyle}"
                                           ItemsSource="{Binding Source={StaticResource ImageItemsKey}}"
                                           ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                                          SelectionChanged="ImageListView_SelectionChanged" />
+                                          SelectionChanged="ImageListView_SelectionChanged" 
+                                          MouseDoubleClick="ImageListView_MouseDoubleClick"
+                                          />
                             </Border>
                         </Grid>
                     </TabItem>

@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace NZNZWPF
 {
-    class ImageItem : INotifyPropertyChanged
+    public class ImageItem : INotifyPropertyChanged
     {
         private string url;
         private string filename;
@@ -26,8 +26,8 @@ namespace NZNZWPF
             set
             {
                 url = value;
+                FileName = URL.Split('/').Last();
                 OnPropertyChanged("URL");
-                OnPropertyChanged("FileName");
 
                 OriginImage = imageFromUrl(URL);
             }
@@ -40,6 +40,24 @@ namespace NZNZWPF
             {
                 originImage = value;
                 OnPropertyChanged("OriginImage");
+                OnPropertyChanged("Width");
+                OnPropertyChanged("Height");
+            }
+        }
+
+        public double Width
+        {
+            get
+            {
+                return OriginImage.Width;
+            }
+        }
+
+        public double Height
+        {
+            get
+            {
+                return OriginImage.Height;
             }
         }
 
@@ -53,10 +71,14 @@ namespace NZNZWPF
             }
         }
 
+        public ImageItem()
+        {
+
+        }
+
         public ImageItem(string url)
         {
             URL = url;
-            FileName = URL.Split('/').Last();
             if (string.IsNullOrWhiteSpace(URL.Split('.').Last()))
             {
                 FileName += ".png";
@@ -107,7 +129,7 @@ namespace NZNZWPF
         #endregion
     }
 
-    class ImageItemCollection : ObservableCollection<ImageItem>
+    public class ImageItemCollection : ObservableCollection<ImageItem>
     {
         private int minWidth;
         private int minHeight;
@@ -172,6 +194,42 @@ namespace NZNZWPF
                 if (item.URL == url)
                     return true;
             return false;
+        }
+
+        public new void Add(ImageItem item)
+        {
+            if (!Contains(item))
+                base.Add(item);
+        }
+
+        public bool IsUniqueFileName(ImageItem selectedItem)
+        {
+            foreach (var item in Items)
+                if (item.FileName == selectedItem.FileName && item != selectedItem)
+                    return false;
+
+            return true;
+        }
+
+        public void FileNameNumbering(bool isZeroFill, string prefix = "", string postfix = "")
+        {
+            int count = Items.Count;
+            int digits = Convert.ToInt32(Math.Ceiling(Math.Log10(count)));
+            string format = null;
+            string extension = null;
+            int num = 1;
+
+            if (isZeroFill)
+                format = "{0}{1:D" + digits + "}{2}.{3}";
+            else
+                format = "{0}{1}{2}.{3}";
+
+            MessageBox.Show(digits.ToString());
+            foreach(var item in Items)
+            {
+                extension = item.FileName.Split('.').Last();
+                item.FileName = string.Format(format, prefix, num++, postfix, extension);
+            }
         }
     }
 }

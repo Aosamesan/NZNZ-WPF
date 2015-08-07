@@ -77,6 +77,9 @@
     <Compile Include="FavortiesDialog.xaml.cs">
       <DependentUpon>FavortiesDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ImageFile.xaml.cs">
+      <DependentUpon>ImageFile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImageItem.cs" />
     <Compile Include="ImageParser.cs" />
     <Compile Include="SizeDialog.xaml.cs">
@@ -95,6 +98,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FavortiesDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImageFile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
