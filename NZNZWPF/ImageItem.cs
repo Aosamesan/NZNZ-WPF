@@ -123,8 +123,7 @@ namespace NZNZWPF
 
         protected void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }
@@ -215,20 +214,16 @@ namespace NZNZWPF
         {
             int count = Items.Count;
             int digits = Convert.ToInt32(Math.Ceiling(Math.Log10(count)));
-            string format = null;
             string extension = null;
             int num = 1;
-
-            if (isZeroFill)
-                format = "{0}{1:D" + digits + "}{2}.{3}";
-            else
-                format = "{0}{1}{2}.{3}";
-
-            MessageBox.Show(digits.ToString());
+            
             foreach(var item in Items)
             {
                 extension = item.FileName.Split('.').Last();
-                item.FileName = string.Format(format, prefix, num++, postfix, extension);
+                if (isZeroFill)
+                    item.FileName = $"{prefix}{num++}{postfix}.{extension}";
+                else
+                    item.FileName = string.Format($"{prefix}{{0:D{digits}}}{postfix}.{extension}", num++);
             }
         }
     }

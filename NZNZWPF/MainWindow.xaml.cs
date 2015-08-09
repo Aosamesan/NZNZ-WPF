@@ -143,7 +143,7 @@ namespace NZNZWPF
 
                         var list = imageParser.GetImageSources(ref html);
 
-                        if (list != null && list.Count > 0)
+                        if (list?.Count > 0)
                         {
                             if (!isAppend)
                                 Dispatcher.Invoke(ClearList);
@@ -357,8 +357,6 @@ namespace NZNZWPF
             if(item != null)
             {
                 ImageView.Source = item.OriginImage;
-
-                // ImageView.BeginAnimation(OpacityProperty, appearAnimation);
             }
             else
             {
@@ -405,8 +403,7 @@ namespace NZNZWPF
         {
             List<string> selectedURLs;
 
-            if (ImageListView.SelectedItems == null ||
-                ImageListView.SelectedItems.Count < 1)
+            if (ImageListView.SelectedItems?.Count < 1)
                 return;
 
             selectedURLs = new List<string>();
@@ -529,8 +526,7 @@ namespace NZNZWPF
 
         private void SaveSelectedButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ImageListView.SelectedItems == null ||
-                ImageListView.SelectedItems.Count < 2)
+            if (ImageListView.SelectedItems?.Count < 2)
                 return;
 
             var c = ImageListView.SelectedItems;
@@ -590,8 +586,7 @@ namespace NZNZWPF
 
         private void SaveAllButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ImageListView.Items == null ||
-                   ImageListView.Items.Count < 2)
+            if (ImageListView.Items?.Count < 2)
                 return;
 
             var c = ImageListView.Items;
@@ -611,8 +606,7 @@ namespace NZNZWPF
 
         private void SaveAllZipButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ImageListView.Items == null ||
-                ImageListView.Items.Count < 2)
+            if (ImageListView.Items?.Count < 2)
                 return;
 
             ZipArchive zipArchive;
